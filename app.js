@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 使用session 中间件  保持会话
 app.use(session({
 	secret: 'woodBirds',
-	resave: true,
+	resave: false,
 	saveUninitialized: false,
 	cookie: {
 		maxAge: 1000 * 60 * 30 // 设置session有效时间,单位毫秒

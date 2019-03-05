@@ -1,11 +1,17 @@
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const mongoose = require('mongoose');
+
+const upload = multer({ dest: 'public/images/article/' });
 
 const ArticleModel = require('../model/article');
 const ArticleSchema = require('../schemas/Article');
 
 const Valid = require('../server/valid');
+const Auth = require('../server/auth');
 /**
  * 获取精选的文章列表
  * @param {Number} pageNo 页码 must
@@ -29,10 +35,16 @@ router.get('/wonderful', (req, res, next) => {
       console.log(docs);
       // let data = JSON.parse(JSON.stringify(docs));
       const data = docs.map(item => {
+        // const newObj = Object.assign({}, item);
+        // newObj.id = item._id;
+        // delete newObj._id
+        // return newObj;
         return {
           id: item._id,
+          content: item.content,
           title: item.title,
-          bannerUrl: item.bannerUrl
+          createTime: item.createTime,
+          bannerUrl: item.bannerUrl || ''
         };
       })
       res.send({
@@ -97,6 +109,34 @@ router.post('/addWonderful', (req, res, netx) => {
         })
       }
     })
+})
+
+/**
+ * 上传文章封面图片
+ * @param {file} file 图片文件
+ */
+router.post('/uploadBanner', upload.single('file'), (req, res, next) => {
+  if (Auth.keepConversation(req, res)) return;
+
+  if (req.file !== {}) {
+    const file = req.file;
+    const splits = file.originalname.split('.');
+    const extname = splits[splits.length - 1];
+    fs.renameSync(path.resolve(__dirname, `../public/images/article/${file.filename}`), path.resolve(__dirname, `../public/images/article/${file.filename}.${extname}`));
+
+    res.send({
+      code: 0,
+      data: {
+        url: `${API}/images/article/${file.filename}.${extname}`
+      }
+    })
+  } else {
+    res.send({
+      code: 1,
+      data: null,
+      msg: '请上传图片'
+    })
+  }
 })
 
 module.exports = router;

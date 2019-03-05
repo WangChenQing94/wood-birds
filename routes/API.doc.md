@@ -10,7 +10,7 @@
 4 登陆超时
 
 ## 1. 首页
-### 接口: /home &nbsp; GET
+### 1.1 接口: /home &nbsp; GET
 ```
 返回
   code: 0,
@@ -35,7 +35,17 @@
   }
 ```
 
+### 1.2 获取城市列表
+### 接口: /getCityList &nbsp; GET
+```
+  参数
+    pageSize: Number // must
+    pageNo: Number // must
+```
+
 --------
+
+### 1.3
 
 ## 2.资源类接口
 ### 2.1 获取热门城市
@@ -275,6 +285,20 @@
 ```
   参数
     id: String // 文章id must
+```
+
+### 4.3 添加文章
+### 接口: /discover/addWonderful &nbsp; POST
+```
+  参数
+    title: String // 文章标题
+    content: String // 文章内容
+```
+
+### 4.4 上传文章封面 TODO
+### 接口: /discover/uploadBanner &nbsp; POST
+```
+  参数
 ```
 
 ## 5.订单类接口

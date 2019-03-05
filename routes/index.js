@@ -6,7 +6,7 @@ const fs = require('fs');
 
 router.all('*', (req, res, next) => {
 
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3001'); // 项目上线后改成页面的地址
+  res.header('Access-Control-Allow-Origin', WebIP); // 线上地址
 
   res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type');
 
@@ -19,12 +19,6 @@ router.all('*', (req, res, next) => {
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-
-  fs.unlink(path.resolve(__dirname, '../public/images/home/66219f16f2bbb92e9b48e320e4653099.jpg'), err => {
-    if (err) throw err;
-    console.log('文件已删除');
-  })
-
   res.send(`
     <!DOCTYPE html>
     <html lang="en">

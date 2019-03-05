@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 
 const dbName = 'wood_birds'
-const dbAddr = `mongodb://localhost:27017`
+const dbAddr = `mongodb://127.0.0.1:27017`
 mongoose.connect(dbAddr, { dbName: dbName, useNewUrlParser: true })
 
 const db = mongoose.connection
 db.on('error', () => {
-  console.log('Error')
+  console.log('Error, Mongodb is not connect')
 })
 db.once('open', () => {
-  console.log('connected')
+  console.log('Mongodb is connected')
 })
 
 module.exports = mongoose

@@ -133,7 +133,7 @@ router.post('/login', (req, res) => {
           }
         } else {
           res.send({
-            code: 0,
+            code: -1,
             data: null,
             msg: '该用户不存在'
           })
