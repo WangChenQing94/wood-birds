@@ -25,6 +25,7 @@ router.post('/generateOrder', (req, res) => {
   if (Valid.compareField(fields, req.body, res)) return;
 
   const doc = req.body;
+  doc.houseId = mongoose.Types.ObjectId(doc.houseId);
   doc.payStatus = false;
   OrderModal
     .create(req.body)
@@ -108,7 +109,7 @@ router.post('/confirmPayment', (req, res) => {
 
 /**
  * 订单列表
- * @param {Number} status 0 进行中; 1 已结束 must
+ * @param {Number} status 0 进行中; 1 已结束; 2 全部 must
  * @param {String} userId 用户Id must
  * @param {Number} pageSize 页数 must
  * @param {Number} pageNo 页码 must
@@ -154,30 +155,82 @@ router.post('/getOrderList', (req, res) => {
   }
 
   OrderSchema
-    .find(filter)
+    .aggregate([
+      {
+        $lookup: {
+          from: 'houses',
+          localField: 'houseId',
+          foreignField: '_id',
+          as: 'houses'
+        }
+      },
+      {
+        $unwind: {
+          path: '$houses',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $match: filter
+      },
+      {
+        $project: {
+          name: 1,
+          userId: 1,
+          beginTime: 1,
+          endTime: 1,
+          phone: 1,
+          totalPrice: 1,
+          payStatus: 1,
+          houses: {
+            name: 1,
+            province: 1,
+            city: 1,
+            region: 1,
+            addrDetail: 1
+          }
+        }
+      }
+    ])
     .limit(limit)
     .skip(skip)
-    .exec((err, docs) => {
-      console.log(err)
-      console.log(docs)
-      if (!err) {
-        let data = JSON.parse(JSON.stringify(docs));
-        data = data.map(item => {
-          delete item._id;
-          delete item.userId;
-          return item;
-        })
-        res.send({
-          code: 0,
-          data,
-          total: total,
-          pageSize,
-          pageNo
-        })
-      } else {
-        res.status(500)
-      }
+    .then(doc => {
+      console.log('多表关联查询 结果---------------')
+      console.log(doc)
+      res.send({
+        code: 0,
+        data: doc,
+        total,
+        pageSize,
+        pageNo
+      })
     })
+
+  // OrderSchema
+  //   .find(filter)
+  //   .limit(limit)
+  //   .skip(skip)
+  //   .exec((err, docs) => {
+  //     console.log(err)
+  //     console.log(docs)
+  //     if (!err) {
+  //       let data = JSON.parse(JSON.stringify(docs));
+  //       data = data.map(item => {
+  //         delete item._id;
+  //         delete item.userId;
+  //         return item;
+  //       })
+  //       res.send({
+  //         code: 0,
+  //         data,
+  //         total: total,
+  //         pageSize,
+  //         pageNo
+  //       })
+  //     } else {
+  //       res.status(500)
+  //     }
+  //   })
 })
 
 module.exports = router;

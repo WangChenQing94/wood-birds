@@ -28,7 +28,7 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
-		maxAge: 1000 * 60 * 30 // 设置session有效时间,单位毫秒
+		maxAge: 1000 * 60 * 60 // 设置session有效时间,单位毫秒
 	}
 }))
 

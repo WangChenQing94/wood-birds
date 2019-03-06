@@ -10,6 +10,7 @@ const HouseSchema = require('../schemas/House');
 
 // Model
 // const HotCityModel = require('../model/hotCity');
+const UserModel = require('../model/user');
 const HouseModel = require('../model/house');
 const CityModel = require('../model/city');
 const Evaluate = require('../model/evaluate');
@@ -43,7 +44,7 @@ router.get('/hotCity', (req, res) => {
 })
 
 /**
- * 模糊查询 DONE
+ * 模糊查询
  * @param {string} name must 输入目的地字段
  */
 router.post('/search', (req, res) => {
@@ -76,10 +77,14 @@ router.post('/search', (req, res) => {
 router.post('/addHouse', (req, res) => {
   if (Auth.keepConversation(req, res)) return;
 
-  res.body.userId = req.session.userId;
   const body = req.body;
   console.log('添加房源 参数 ------------- ');
   console.log(body);
+  body.userId = req.session.userId;
+  // 初始化参数
+  body.score = '0';
+  body.evaluate = '0';
+
   HouseModel
     .create(body)
     .then(({ code, data }) => {
@@ -228,7 +233,7 @@ router.post(_r_list, (req, res) => {
   //   //   { $or: [{ endTime: { $lte: req.body.endTime } }] },
   //   // ]
   // }
-  
+
   if (params.length) {
     filter = {
       $and: params
@@ -293,10 +298,21 @@ router.get('/houseDetail', (req, res) => {
         let result = JSON.parse(JSON.stringify(data))
         result['houseId'] = data._id
         delete result._id
-        res.send({
-          code: code,
-          data: result
-        })
+        UserModel
+          .findOne({ _id: mongoose.Types.ObjectId(result.userId) })
+          .then((doc) => {
+            console.log(doc)
+            result.user = {
+              name: doc.data.name,
+              avatarUrl: doc.data.avatarUrl,
+              phone: doc.data.phone
+            }
+            delete result.userId
+            res.send({
+              code: doc.status,
+              data: result
+            })
+          })
       }
     })
     .catch(err => {

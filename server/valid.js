@@ -15,7 +15,7 @@ class Valid {
   compareField(fields = [], data = {}, res = {}) {
     let err = ''
     for (let key of fields) {
-      if (!data[key]) err += `${key} `;
+      if (typeof data[key] === 'undefined') err += `${key} `;
     }
     if (err.length) {
       res.send({
