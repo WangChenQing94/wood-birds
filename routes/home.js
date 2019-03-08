@@ -143,12 +143,13 @@ router.post('/addCity', (req, res) => {
   if (Auth.keepConversation(req, res)) return;
 
   if (req.body.isHot) {
-    if (req.body.url) {
+    if (!req.body.url) {
       res.send({
         code: 1,
         data: null,
         msg: '缺少字段 url'
       })
+      return;
     } else {
       req.body.url = req.body.url.substring(API.length);
     }
@@ -161,6 +162,8 @@ router.post('/addCity', (req, res) => {
       console.log(code)
       console.log(data)
       if (code === 0 && !data.length) {
+        console.log('添加的参数对象------------')
+        console.log(req.body)
         CityModel
           .create(req.body)
           .then(result => {

@@ -102,7 +102,7 @@
     toilet: Number, // 卫生间 Option
     pageNo: Number, // 页码 must
     pageSize: Number, // 页数 must
-    sort: String, // 排序 must(暂无)
+    sort: String, // 排序 must 0 默认排序(评分最高) 1 价格从高到底  2 价格从低到高 3 评分最高 
 ```
 ```
 返回

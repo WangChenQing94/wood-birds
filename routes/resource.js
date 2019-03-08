@@ -154,7 +154,7 @@ router.post('/upload', upload.array('file', 9), (req, res) => {
  * @param {String} code 地区编码 option
  * @param {Number} beginTime 入住时间 option
  * @param {Number} endTime 退房时间 option
- * @param {String} sort 排序 must
+ * @param {String} sort 排序 must  0 默认排序(评分最高) 1 价格从高到底  2 价格从低到高 3 评分最高 
  * @param {Number} minPrice 最低价格 option
  * @param {Number} maxPrice 最高价格 option
  * @param {Number} peoples 入住人数 option
@@ -167,13 +167,35 @@ router.post('/upload', upload.array('file', 9), (req, res) => {
  */
 const _r_list = '/list'
 router.post(_r_list, (req, res) => {
-  const fields = ['pageSize', 'pageNo'];
+  const fields = ['pageSize', 'pageNo', 'sort'];
   if (Valid.compareField(fields, req.body, res)) return;
 
   const pageSize = req.body.pageSize && Number(req.body.pageSize)
   const pageNo = req.body.pageNo && Number(req.body.pageNo)
   const limit = pageSize || 0
-  const skip = (pageSize && pageNo) ? pageSize * (pageNo - 1) : 0
+  const skip = (pageSize && pageNo) ? pageSize * (pageNo - 1) : 0;
+  // 排序
+  let sort = {};
+  switch (req.body.sort.toString()) {
+    case '1':
+      sort = {
+        'price': -1
+      }
+      break;
+    case '2':
+      sort = {
+        'price': 1
+      }
+      break;
+    case '0':
+    case '3':
+      sort = {
+        'score': -1
+      }
+      break;
+  }
+  console.log('列表排序规则---------------')
+  console.log(sort)
 
   delete req.body.pageSize;
   delete req.body.pageNo;
@@ -196,6 +218,10 @@ router.post(_r_list, (req, res) => {
   if (req.body.minPrice && req.body.maxPrice) {
     params.push({ $or: [{ price: { $gte: req.body.minPrice, $lte: req.body.maxPrice } }] })
   }
+  if (req.body.beginTime && req.body.endTime) {
+    params.push({ $or: [{ beginTime: { $gte: req.body.beginTime } }] })
+    params.push({ $or: [{ endTime: { $lte: req.body.endTime } }] })
+  }
   if (req.body.code) {
     cityCode.push({
       province: req.body.code
@@ -213,7 +239,6 @@ router.post(_r_list, (req, res) => {
     })
   }
 
-  console.log(JSON.stringify(params));
   // let filter = {
   //   // $and: [
   //   //   {
@@ -239,6 +264,7 @@ router.post(_r_list, (req, res) => {
       $and: params
     }
   }
+  console.log('列表筛选条件---------------')
   console.log(JSON.stringify(filter));
 
   // 查询符合条件的总条数
@@ -255,6 +281,7 @@ router.post(_r_list, (req, res) => {
     .find(filter)
     .limit(limit)
     .skip(skip)
+    .sort(sort)
     .exec((err, doc) => {
       if (err) {
         console.log(err)
@@ -364,7 +391,6 @@ router.post('/deleteHouse', (req, res) => {
 router.post('/addEvaluate', (req, res) => {
   const fields = ['houseId', 'avatarUrl', 'name', 'content', 'score'];
   if (Valid.compareField(fields, req.body, res)) return;
-
 
   console.log(req.query.houseId)
   const body = req.body;

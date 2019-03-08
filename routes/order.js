@@ -126,7 +126,8 @@ router.post('/getOrderList', (req, res) => {
 
   let total = 0;
   OrderSchema.count({
-    userId
+    userId,
+    payStatus: true
   }, (err, count) => {
     console.log(err)
     console.log(count);
@@ -145,7 +146,8 @@ router.post('/getOrderList', (req, res) => {
   const currentTime = new Date().getTime();
   if (Number(status) === 0) {
     filter['$and'].push({
-      $and: [{ endTime: { $lte: currentTime } }]
+      $and: [{ endTime: { $lte: currentTime } }],
+      $and: [{ payStatus: true }]
     })
   } else if (Number(status) === 1) {
     filter['$and'].push({
