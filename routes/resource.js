@@ -392,7 +392,6 @@ router.post('/addEvaluate', (req, res) => {
   const fields = ['houseId', 'avatarUrl', 'name', 'content', 'score'];
   if (Valid.compareField(fields, req.body, res)) return;
 
-  console.log(req.query.houseId)
   const body = req.body;
   body.createTime = new Date().getTime();
   Evaluate
@@ -406,6 +405,7 @@ router.post('/addEvaluate', (req, res) => {
           data: null,
           msg: '添加评论成功'
         })
+        updateHouseScore(req.body.houseId)
       } else {
         res.send({
           code: -1,
@@ -415,6 +415,38 @@ router.post('/addEvaluate', (req, res) => {
       }
     })
 })
+
+/**
+ * 根据房源评论 更新房源评分
+ */
+const updateHouseScore = (houseId) => {
+
+  // 先查找所有的评论
+  Evaluate
+    .find({ houseId: houseId })
+    .then(res => {
+      if (res.code === 0) {
+        let sum = 0;
+        if (res.data.length) {
+          for (let item of res.data) {
+            sum += Number(item.score)
+          }
+          // 计算所有评分 取平均值
+          const average = (sum / res.data.length).toFixed(1).toString();
+          // 更新房源的评分和评论数
+          HouseModel
+            .findByIdAndUpdate(mongoose.Types.ObjectId(houseId), { score: average, evaluate: res.data.length.toString() }, { new: true })
+            .then(result => {
+              if (result.code === 0) {
+                console.log('更新房源信息成功');
+              } else {
+                console.log('更新房源信息未成功');
+              }
+            })
+        }
+      }
+    })
+}
 
 /**
  * 根据房屋Id获取评论列表

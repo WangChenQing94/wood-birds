@@ -54,10 +54,10 @@ const findOne = (args) => {
 /**
  * 更新信息
  */
-const findByIdAndUpdate = (args) => {
+const findByIdAndUpdate = (id, args, options) => {
   return new Promise((resolve, reject) => {
     ModelServer
-      .findByIdAndUpdate(House, args)
+      .findByIdAndUpdate(House, id, args, options)
       .then(({ code, data }) => {
         resolve({ code, data })
       })

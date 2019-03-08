@@ -119,6 +119,7 @@ router.post('/login', (req, res) => {
               code: 0,
               data: {
                 name: name,
+                userId: _id,
                 avatarUrl: phone === 'admin' ? `${global.API}/${avatarUrl}` : avatarUrl,
                 isAdmin: phone === 'admin' ? true : false
               },
