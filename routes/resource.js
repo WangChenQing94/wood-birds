@@ -207,7 +207,7 @@ router.post(_r_list, (req, res) => {
 
   for (let key in req.body) {
     if (req.body[key]) {
-      if (key !== 'minPrice' && key !== 'maxPrice' && key !== 'code') {
+      if (key !== 'minPrice' || key !== 'maxPrice' || key !== 'code') {
         continue;
       }
       let obj = {};
@@ -224,7 +224,7 @@ router.post(_r_list, (req, res) => {
   }
   if (req.body.code) {
     cityCode.push({
-      province: req.body.code
+      city: req.body.code
     })
   }
   if (cityCode.length) {
@@ -366,7 +366,7 @@ router.post('/deleteHouse', (req, res) => {
       console.log('删除房源结果 ------------ ')
       console.log(result)
       if (result.code === 0) {
-        if (data) {
+        if (result.data) {
           res.send({
             code: 0,
             msg: '删除成功'

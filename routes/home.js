@@ -32,15 +32,18 @@ router.get('/home', (req, res) => {
       return API + '/images/home/banner/' + item
     })
     // 获取热门城市
-    CitySchema
+    CityModel
       .find({ isHot: true })
       .then(result => {
         console.log('HotCityModel ---------- >')
         const _citys = result.data || [];
         console.log(_citys)
         _docs['hotCitys'] = _citys.map(item => {
-          item.url = API + item.url
-          return item
+          const cell = JSON.parse(JSON.stringify(item))
+          cell.id = cell._id
+          cell.url = API + cell.url
+          delete cell._id;
+          return cell
         })
         res.send({
           code: 0,
@@ -156,7 +159,7 @@ router.post('/addCity', (req, res) => {
   }
 
   CityModel
-    .find({ code: req.body.code })
+    .find({ name: req.body.name })
     .then(({ code, data }) => {
       console.log('查詢城市結果 --------------- ')
       console.log(code)
@@ -256,6 +259,9 @@ router.get('/getCityList', (req, res, next) => {
       if (docs.length) {
         data = data.map(item => {
           item.id = item._id;
+          if (item.url) {
+            item.url = `${API}${item.url}`
+          }
           delete item._id;
           return item;
         })
