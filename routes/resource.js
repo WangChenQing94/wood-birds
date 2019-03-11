@@ -381,6 +381,29 @@ router.post('/deleteHouse', (req, res) => {
 })
 
 /**
+ * 删除房源图片
+ * @param {String} url must 图片链接
+ */
+router.post('/deleteHousePicture', (req, res) => {
+  if (Auth.keepConversation(req, res)) return;
+
+  const fields = ['url'];
+  if (Valid.compareField(fields, req, res)) return;
+
+  fs.unlink(path.resolve(__dirname, `../public${req.body.url.substring(API.length, )}`), err => {
+    console.log(err);
+    if (err) {
+      res.status(500)
+    }
+    res.send({
+      code: 0,
+      data: null,
+      msg: '删除成功'
+    })
+  })
+})
+
+/**
  * 添加评论
  * @param {String} houseId 房屋Id must
  * @param {String} avatarUrl 用户头像 must

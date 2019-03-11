@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
   // 房源Id
-  houseId: String,
+  houseId: mongoose.Types.ObjectId,
   // 用户Id
   userId: String,
   // 入住时间

@@ -28,7 +28,7 @@ router.post('/generateOrder', (req, res) => {
   doc.houseId = mongoose.Types.ObjectId(doc.houseId);
   doc.payStatus = false;
   OrderModal
-    .create(req.body)
+    .create(doc)
     .then(({ code, data }) => {
       console.log('生成订单结果 ------------- ');
       console.log(code);
