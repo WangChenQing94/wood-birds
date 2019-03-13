@@ -125,19 +125,6 @@ router.post('/getOrderList', (req, res) => {
   const skip = (pageSize && pageNo) ? pageSize * (pageNo - 1) : 0
 
   let total = 0;
-  OrderSchema.count({
-    userId,
-    payStatus: true
-  }, (err, count) => {
-    console.log(err)
-    console.log(count);
-    if (err) {
-      res.send(500)
-      return
-    }
-    total = count;
-  })
-
   const filter = {
     $and: [
       { $and: [{ userId }] }
@@ -145,16 +132,31 @@ router.post('/getOrderList', (req, res) => {
   }
   const currentTime = new Date().getTime();
   if (Number(status) === 0) {
-    filter['$and'].push({
-      $and: [{ endTime: { $lte: currentTime } }],
-      $and: [{ payStatus: true }]
-    })
+    filter['$and'].push({ $and: [{ endTime: { $gte: currentTime } }] }, { $and: [{ payStatus: true }] })
   } else if (Number(status) === 1) {
-    filter['$and'].push({
-      $and: [{ endTime: { $gte: currentTime } }],
-      $and: [{ payStatus: true }]
-    })
+    filter['$and'].push({ $and: [{ endTime: { $lte: currentTime } }] }, { $and: [{ payStatus: true }] })
   }
+
+  OrderSchema
+    .find(filter)
+    .count()
+    .then(result => {
+      console.log('返回结果-------------')
+      total = result;
+    })
+
+  // OrderSchema.count({
+  //   userId,
+  //   payStatus: true
+  // }, (err, count) => {
+  //   console.log(err)
+  //   console.log(count);
+  //   if (err) {
+  //     res.send(500)
+  //     return
+  //   }
+  //   total = count;
+  // })
 
   OrderSchema
     .aggregate([
