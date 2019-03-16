@@ -60,7 +60,7 @@ router.get('/wonderful', (req, res, next) => {
  * @param {String} id must
  */
 router.get('/articleDetail', (req, res, next) => {
-  const fields = ['if']
+  const fields = ['id']
   if (Valid.compareField(fields, res.query, res)) return;
 
   const _id = mongoose.Types.ObjectId(req.query.id);
@@ -112,6 +112,32 @@ router.post('/addWonderful', (req, res, netx) => {
     })
 })
 
+router.post('/delWonderful', (req, res) => {
+  const fields = ['id'];
+  if (Valid.compareField(fields, req.body, res)) return;
+
+  if (Auth.keepConversation(req, res)) return;
+
+  ArticleModel
+    .deleteOne({ _id: mongoose.Types.ObjectId(req.body.id) })
+    .then(result => {
+      console.log(result);
+      if (result.code === 0) {
+        res.send({
+          code: 0,
+          data: null,
+          msg: '删除文章成功'
+        })
+      } else {
+        res.send({
+          code: -1,
+          data: null,
+          msg: '删除文章失败'
+        })
+      }
+    })
+})
+
 /**
  * 上传文章封面图片
  * @param {file} file 图片文件
@@ -142,12 +168,12 @@ router.post('/uploadBanner', upload.single('file'), (req, res, next) => {
 
 const ueConfJson = require('../public/UE/ueditor.config.json');
 router.get('/uploadImage', (req, res) => {
-  res.writeHead(200, {'Content-Type': 'text/json'});
+  res.writeHead(200, { 'Content-Type': 'text/json' });
   res.write(JSON.stringify({}));
   res.end();
 })
 
-// 
+//  上传文章图片
 router.post('/uploadImage', (req, res) => {
   console.log(req.body);
   const form = new multiparty.Form();
@@ -157,7 +183,7 @@ router.post('/uploadImage', (req, res) => {
 
   console.log(req.query)
   console.log(req.files)
-  
+
   form.parse(req, (err, fields, files) => {
     console.log(files);
     const file = files.file[0];

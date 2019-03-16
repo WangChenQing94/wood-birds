@@ -47,8 +47,23 @@ const findOne = (args) => {
   })
 }
 
+/**
+ * 删除符合条件的第一个文档
+ */
+const deleteOne = (args) => {
+  return new Promise((resolve, reject) => {
+    modelServer
+      .deleteOne(Article, args)
+      .then(({ code, data }) => {
+        resolve({ code, data })
+      })
+      .catch(err => reject(err))
+  })
+}
+
 module.exports = {
   create,
   find,
-  findOne
+  findOne,
+  deleteOne
 }

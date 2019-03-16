@@ -6,13 +6,14 @@ const fs = require('fs');
 
 router.all('*', (req, res, next) => {
 
+  console.log(WebIP);
   res.setHeader('Access-Control-Allow-Origin', WebIP);
 
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-PINGOTHER,x_requested_with,X-Requested-With');
 
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-  res.headsetHeaderer('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
   
   next();
 })
