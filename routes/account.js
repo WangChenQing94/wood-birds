@@ -3,12 +3,15 @@
  */
 const router = require('express').Router();
 const request = require('request');
+const crypto = require('crypto');
 
 const UserModel = require('../model/user');
 const UserSchema = require('../schemas/User');
 
 const Valid = require('../server/valid');
 const Auth = require('../server/auth');
+
+const MD5 = crypto.createHash('md5');
 /**
  * 小程序登录
  * @param {String} name 用户昵称 must
@@ -110,6 +113,7 @@ router.post('/login', (req, res) => {
           if (result.data.password === password) {
             const { _id, name, avatarUrl } = result.data;
             req.session.userId = _id;
+            console.log(req.session);
             // 是否是超级管理员
             if (phone === 'admin') {
               global.adminId = _id;

@@ -6,13 +6,13 @@ const fs = require('fs');
 
 router.all('*', (req, res, next) => {
 
-  res.header('Access-Control-Allow-Origin', WebIP); // 线上地址
+  res.setHeader('Access-Control-Allow-Origin', WebIP);
 
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,X-PINGOTHER,x_requested_with,X-Requested-With');
 
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-  res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
+  res.headsetHeaderer('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
   
   next();
 })

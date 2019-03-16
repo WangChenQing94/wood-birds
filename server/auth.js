@@ -14,6 +14,7 @@ class Auth {
    */
   keepConversation(req, res) {
     console.log(req.session);
+    console.log(req.session.userId);
     if (!req.session.userId) {
       res.send({
         code: 4,

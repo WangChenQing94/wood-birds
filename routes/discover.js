@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const multiparty = require('multiparty');
 const mongoose = require('mongoose');
 
 const upload = multer({ dest: 'public/images/article/' });
@@ -116,7 +117,7 @@ router.post('/addWonderful', (req, res, netx) => {
  * @param {file} file 图片文件
  */
 router.post('/uploadBanner', upload.single('file'), (req, res, next) => {
-  if (Auth.keepConversation(req, res)) return;
+  // if (Auth.keepConversation(req, res)) return;
 
   if (req.file !== {}) {
     const file = req.file;
@@ -137,6 +138,42 @@ router.post('/uploadBanner', upload.single('file'), (req, res, next) => {
       msg: '请上传图片'
     })
   }
+})
+
+const ueConfJson = require('../public/UE/ueditor.config.json');
+router.get('/uploadImage', (req, res) => {
+  res.writeHead(200, {'Content-Type': 'text/json'});
+  res.write(JSON.stringify({}));
+  res.end();
+})
+
+// 
+router.post('/uploadImage', (req, res) => {
+  console.log(req.body);
+  const form = new multiparty.Form();
+
+  form.encoding = 'utf-8';
+  form.uploadDir = path.resolve(__dirname, '../public/images/article/');
+
+  console.log(req.query)
+  console.log(req.files)
+  
+  form.parse(req, (err, fields, files) => {
+    console.log(files);
+    const file = files.file[0];
+    console.log(file);
+    console.log(file.path.substr(file.path.indexOf('article') + 8));
+    const filename = file.path.substr(file.path.indexOf('article') + 8);
+    res.send({
+      "originalName": filename.split('.')[0],
+      "name": filename.split('.')[0],
+      "url": API + `/images/article/${filename}`,
+      "type": filename.split('.')[1],
+      "size": file.size,
+      "state": "SUCCESS"
+    });
+    res.end();
+  })
 })
 
 module.exports = router;
