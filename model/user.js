@@ -34,6 +34,20 @@ const findOne = (args) => {
 }
 
 /**
+ * 更新信息
+ */
+const findByIdAndUpdate = (id, args, options) => {
+  return new Promise((resolve, reject) => {
+    modelServer
+      .findByIdAndUpdate(User, id, args, options)
+      .then(({ code, data }) => {
+        resolve({ code, data })
+      })
+      .catch(err => reject(err))
+  })
+}
+
+/**
  * 注册用户
  */
 const register = (args) => {
@@ -44,20 +58,6 @@ const register = (args) => {
         resolve(res);
       })
       .catch(err => reject(err));
-  })
-}
-
-/**
- * 更新信息
- */
-const findByIdAndUpdate = (args) => {
-  return new Promise((resolve, reject) => {
-    modelServer
-      .findByIdAndUpdate(User, args)
-      .then(({ code, data }) => {
-        resolve({ code, data })
-      })
-      .catch(err => reject(err))
   })
 }
 

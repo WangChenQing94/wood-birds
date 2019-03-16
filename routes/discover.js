@@ -166,7 +166,7 @@ router.post('/uploadBanner', upload.single('file'), (req, res, next) => {
   }
 })
 
-const ueConfJson = require('../public/UE/ueditor.config.json');
+// const ueConfJson = require('../public/UE/ueditor.config.json');
 router.get('/uploadImage', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/json' });
   res.write(JSON.stringify({}));

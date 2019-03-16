@@ -136,6 +136,7 @@
   参数
     houseId: String, // 房源Id must
 ```
+
 ```
 返回
   code: 0,
@@ -146,33 +147,37 @@
       // 房主姓名
       name: '',
       // 房主头像
-      avatar: ``,
+      avatarUrl: ``,
       // 房主电话
-      tel: ''
+      phone: ''
     },
-    houses: {
-      // 面积
-      area: 70,
-      // 租赁类型
-      lease: '整租',
-      // 房屋类型
-      buildType: '民居',
-      // 房屋格局
-      houseType: '2室1厅',
-      // 居住人数
-      peoples: '4',
-      // 厕所
-      toilet: '1',
-      // 床位
-      bed: '1',
-      // 房屋描述
-      describe: '',
-      // 评价
-      scores: null,
-      // 地址
-      addr: '上海浦东新区',
-      // 坐标
-      coordinate: ['110', '45']
+    // 面积
+    area: 70,
+    // 租赁类型
+    lease: '整租',
+    // 房屋类型
+    buildType: '民居',
+    // 房屋格局
+    houseType: '2室1厅',
+    // 居住人数
+    peoples: '4',
+    // 厕所
+    toilet: '1',
+    // 床位
+    bed: '1',
+    // 房屋描述
+    describe: '',
+    // 评价
+    scores: null,
+    // 地址
+    addr: '上海浦东新区',
+    // 坐标
+    location: {
+      P: 34.65657,
+      R: 112.47291000000001
+      <!-- 用下面这个两个 -->
+      lng: 112.47291,
+      lat: 34.65657
     },
     configure: {
       net: '无线WIFI',
@@ -269,6 +274,16 @@
   参数
     phone: String, // 手机号 must
     password: String, // 密码 must (MD5加密规则 -> 手机号 加上 密码的加密，然后整个加密)
+```
+
+### 3.3 修改用户信息
+### 接口: /account/modify &nbsp; POST
+```
+  参数
+    phone: String, // 手机号 must
+    oldPassword: String, // 旧密码 must
+    password: String, // 新密码 must
+    userId: String, // 用户Id must
 ```
 
 ## 4.文章类接口

@@ -3,6 +3,7 @@
  */
 const router = require('express').Router();
 const request = require('request');
+const mongoose = require('mongoose');
 const crypto = require('crypto');
 
 const UserModel = require('../model/user');
@@ -11,7 +12,12 @@ const UserSchema = require('../schemas/User');
 const Valid = require('../server/valid');
 const Auth = require('../server/auth');
 
-const MD5 = crypto.createHash('md5');
+
+function cryptoMD5(pwd) {
+  const MD5 = crypto.createHash('md5');
+  return MD5.update(pwd).digest('hex');
+}
+
 /**
  * 小程序登录
  * @param {String} name 用户昵称 must
@@ -103,6 +109,7 @@ router.post('/login', (req, res) => {
   if (Valid.compareField(mustFields, req.body, res)) return;
 
   const { phone, password } = req.body;
+  console.log(phone);
   UserModel
     .findOne({ phone })
     .then(result => {
@@ -137,11 +144,38 @@ router.post('/login', (req, res) => {
             })
           }
         } else {
-          res.send({
-            code: -1,
-            data: null,
-            msg: '该用户不存在'
-          })
+          if (phone === 'admin') {
+            UserModel
+              .register({
+                name: '超级管理员',
+                phone: 'admin',
+                password: cryptoMD5(`admin${cryptoMD5('admin123!')}`),
+                avatarUrl: '/images/acount/admin.jpg'
+              }).then(doc => {
+                req.session.userId = doc.data._id;
+                if (doc.code === 0) {
+                  res.send({
+                    code: 0,
+                    data: {
+                      name: '超级管理员',
+                      userId: doc.data._id,
+                      avatarUrl: `${global.API}/images/acount/admin.jpg`,
+                      isAdmin: true
+                    },
+                    msg: '登录成功'
+                  })
+                } else {
+                  res.status(500)
+                }
+              })
+            // res.status(200)
+          } else {
+            res.send({
+              code: -1,
+              data: null,
+              msg: '该用户不存在'
+            })
+          }
         }
       } else {
         res.status(500)
@@ -214,6 +248,102 @@ router.get('/getUserList', (req, res) => {
         msg: ''
       })
     })
+})
+
+/**
+ * 修改用户信息
+ * @param {String} userId 用户Id must
+ * @param {String} password 新密码 must
+ * @param {String} oldPassword 旧密码 must
+ * @param {String} phone 手机号 must
+ */
+router.post('/modify', (req, res) => {
+  const fields = ['userId', 'password', 'oldPassword', 'phone']
+  if (Valid.compareField(fields, req.body, res)) return;
+
+  const { userId, password, oldPassword, phone } = req.body;
+  console.log(req.body);
+  const _id = mongoose.Types.ObjectId(userId);
+  let modify = {};
+  if (password !== '' && oldPassword !== '') {
+    modify['password'] = password;
+    UserModel
+      .findOne({ _id })
+      .then(result => {
+        console.log('修改密码-------------')
+        console.log(result);
+        if (result.code === 0) {
+          if (result.data) {
+            if (result.data.password === oldPassword) {
+              UserModel
+                .findByIdAndUpdate(_id, modify, { new: true })
+                .then(doc => {
+                  console.log(doc)
+                  if (doc.code === 0) {
+                    res.send({
+                      code: 0,
+                      data: null,
+                      msg: '密码修改成功'
+                    })
+                  } else {
+                    res.status(500)
+                  }
+                })
+            } else {
+              res.send({
+                code: -1,
+                data: null,
+                msg: '密码错误'
+              })
+            }
+          } else {
+            res.send({
+              code: -1,
+              data: null,
+              msg: '用户不存在'
+            })
+          }
+        } else {
+          res.status(500)
+        }
+      })
+  } else if (phone !== '') {
+    modify['phone'] = phone;
+    // 查询修改的手机号是否存在
+    UserModel
+      .findOne({ phone })
+      .then(result => {
+        console.log('修改手机号码------------')
+        console.log(result)
+        if (result.code === 0) {
+          // 存在不修改
+          if (result.data) {
+            res.send({
+              code: -1,
+              data: null,
+              msg: '手机号已存在'
+            })
+          } else {
+            // 不存在修改手机号
+            UserModel
+              .findByIdAndUpdate(_id, modify, { new: true })
+              .then(doc => {
+                if (doc.code === 0) {
+                  res.send({
+                    code: 0,
+                    data: null,
+                    msg: '手机号修改成功'
+                  })
+                } else {
+                  res.status(500)
+                }
+              })
+          }
+        } else {
+          res.status(500)
+        }
+      })
+  }
 })
 
 /**

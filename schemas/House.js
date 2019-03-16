@@ -36,6 +36,8 @@ const schema = new mongoose.Schema({
   region: String,
   // 详细地址
   addrDetail: String,
+  // 经纬度 定位
+  location: Object,
   // 入住时间
   beginTime: Number,
   // 退房时间

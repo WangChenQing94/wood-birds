@@ -13,7 +13,6 @@ class Auth {
    * @param {Object} res 响应值
    */
   keepConversation(req, res) {
-    console.log(req.session);
     console.log(req.session.userId);
     if (!req.session.userId) {
       res.send({
