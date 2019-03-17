@@ -79,11 +79,19 @@ router.post('/wxLogin', (req, res, next) => {
                   }
                 })
             } else {
-              res.send({
-                code: 0,
-                data: { userId: data._id },
-                msg: '登录成功'
-              })
+              if (data.password !== body.password) {
+                res.send({
+                  code: -1,
+                  data: null,
+                  msg: '用户名密码错误'
+                })
+              } else {
+                res.send({
+                  code: 0,
+                  data: { userId: data._id },
+                  msg: '登录成功'
+                })
+              }
             }
           } else {
             res.status(500)
