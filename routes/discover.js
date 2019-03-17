@@ -85,8 +85,8 @@ router.get('/articleDetail', (req, res, next) => {
  * @param {String} title 文章标题 must
  * @param {String} content 文章内容 must
  */
-router.post('/addWonderful', (req, res, netx) => {
-  const fields = ['title', 'content'];
+router.post('/addWonderful', (req, res) => {
+  const fields = ['title', 'content', 'bannerUrl'];
   if (Valid.compareField(fields, req.body, res)) return;
 
   const body = req.body;
