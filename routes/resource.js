@@ -279,7 +279,7 @@ router.post(_r_list, (req, res) => {
   // 多条件查询
   HouseSchema
     .find(filter)
-    .limit(limit)
+    .limit(limit + skip)
     .skip(skip)
     .sort(sort)
     .exec((err, doc) => {

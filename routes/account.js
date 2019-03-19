@@ -234,7 +234,7 @@ router.get('/getUserList', (req, res) => {
 
   UserSchema
     .find()
-    .limit(limit)
+    .limit(limit + skip)
     .skip(skip)
     .exec((err, docs) => {
       console.log(docs);

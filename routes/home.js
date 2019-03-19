@@ -251,7 +251,7 @@ router.get('/getCityList', (req, res, next) => {
 
   CitySchema
     .find({})
-    .limit(limit)
+    .limit(limit + skip)
     .skip(skip)
     .exec((err, docs) => {
       console.log(docs)

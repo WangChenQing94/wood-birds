@@ -122,7 +122,8 @@ router.post('/getOrderList', (req, res) => {
   pageSize = pageSize && Number(pageSize);
   pageNo = pageNo && Number(pageNo);
   const limit = pageSize || 0;
-  const skip = (pageSize && pageNo) ? pageSize * (pageNo - 1) : 0
+  const skip = (pageSize && pageNo) ? pageSize * (pageNo - 1) : 0;
+  console.log(skip);
 
   let total = 0;
   const filter = {
@@ -141,6 +142,7 @@ router.post('/getOrderList', (req, res) => {
     .find(filter)
     .count()
     .then(result => {
+      console.log(result);
       console.log('返回结果-------------')
       total = result;
     })
@@ -180,7 +182,6 @@ router.post('/getOrderList', (req, res) => {
       {
         $project: {
           name: 1,
-          userId: 1,
           beginTime: 1,
           endTime: 1,
           phone: 1,
@@ -196,11 +197,12 @@ router.post('/getOrderList', (req, res) => {
         }
       }
     ])
-    .limit(limit)
+    .limit(limit + skip)
     .skip(skip)
-    .then(doc => {
-      console.log('多表关联查询 结果---------------')
-      console.log(doc)
+    .exec((err, doc) => {
+      // console.log(err);
+      // console.log(doc);
+
       res.send({
         code: 0,
         data: doc,

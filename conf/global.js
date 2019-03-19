@@ -2,8 +2,8 @@
  * 定义全局变量
  */
 
-// global.API = 'http://localhost:3000' // 测试
-// global.WebIP = 'http://localhost:3001' // 测试
+// global.API = 'http://localhost:3010' // 测试
+// global.WebIP = 'http://localhost:3006' // 测试
 
 global.API = 'https://aileer.net' // 线上
 global.WebIP = 'http://47.100.20.218:8080' // 线上

@@ -26,14 +26,26 @@ router.get('/wonderful', (req, res, next) => {
   const pageNo = req.query.pageNo && Number(req.query.pageNo);
   const limit = pageSize || 0;
   const skip = (pageSize && pageNo) ? pageSize * (pageNo - 1) : 0;
+  let total = 0;
+
+  ArticleSchema
+    .count({}, (err, count) => {
+      // console.log(err);
+      // console.log(count);
+      if (err) {
+        res.send(err)
+        return
+      }
+      total = count;
+    })
 
   ArticleSchema
     .find()
-    .limit(limit)
+    .limit(limit + skip)
     .skip(skip)
     .exec((err, docs) => {
-      console.log(err);
-      console.log(docs);
+      // console.log(err);
+      // console.log(docs);
       // let data = JSON.parse(JSON.stringify(docs));
       const data = docs.map(item => {
         // const newObj = Object.assign({}, item);
@@ -50,7 +62,8 @@ router.get('/wonderful', (req, res, next) => {
       })
       res.send({
         code: 0,
-        data
+        data,
+        total
       })
     })
 })
